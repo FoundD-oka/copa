@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>開発要件選択システム</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>開発要件選択システム</h1>
+        <p class="subtitle">必要な機能を選択して、概算見積もりを確認できます</p>
+
+        <div class="selection-table">
+            <h2>必須項目</h2>
+            <div class="table-row header">
+                <div class="col-feature">機能</div>
+                <div class="col-initial">初期費用</div>
+                <div class="col-monthly">月額</div>
+                <div class="col-period">期間</div>
+                <div class="col-select">選択</div>
+            </div>
+
+            <!-- 音声生成システム（必須） -->
+            <div class="table-row required">
+                <div class="col-feature">
+                    <i class="fas fa-microphone"></i>
+                    音声生成システム
+                </div>
+                <div class="col-initial">4万円 + モデル数×1万</div>
+                <div class="col-monthly">3,000円～</div>
+                <div class="col-period">2週間</div>
+                <div class="col-select">
+                    <input type="checkbox" checked disabled>
+                </div>
+            </div>
+
+            <!-- 動作生成システム（必須） -->
+            <div class="table-row required">
+                <div class="col-feature">
+                    <i class="fas fa-film"></i>
+                    動作生成システム
+                </div>
+                <div class="col-initial">10万円</div>
+                <div class="col-monthly">0円</div>
+                <div class="col-period">2週間</div>
+                <div class="col-select">
+                    <input type="checkbox" checked disabled>
+                </div>
+            </div>
+
+            <h2>オプション項目</h2>
+            <!-- リアルアバター生成 -->
+            <div class="table-row">
+                <div class="col-feature">
+                    <i class="fas fa-user-circle"></i>
+                    リアルアバター生成
+                </div>
+                <div class="col-initial">0円</div>
+                <div class="col-monthly">0～5,000円</div>
+                <div class="col-period">0週間</div>
+                <div class="col-select">
+                    <input type="checkbox" id="avatar">
+                </div>
+            </div>
+
+            <!-- 動きを指定するシステム -->
+            <div class="table-row">
+                <div class="col-feature">
+                    <i class="fas fa-running"></i>
+                    動きを指定するシステム
+                </div>
+                <div class="col-initial">10万円（3万でも）</div>
+                <div class="col-monthly">0円</div>
+                <div class="col-period">1週間</div>
+                <div class="col-select">
+                    <input type="checkbox" id="motion">
+                </div>
+            </div>
+
+            <!-- 背景透過処理 -->
+            <div class="table-row">
+                <div class="col-feature">
+                    <i class="fas fa-cut"></i>
+                    背景透過処理
+                </div>
+                <div class="col-initial">10万円</div>
+                <div class="col-monthly">0円</div>
+                <div class="col-period">2週間</div>
+                <div class="col-select">
+                    <input type="checkbox" id="background">
+                </div>
+            </div>
+
+            <!-- 動画のアップスケール -->
+            <div class="table-row">
+                <div class="col-feature">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                    動画のアップスケール
+                </div>
+                <div class="col-initial">10万円</div>
+                <div class="col-monthly">0円</div>
+                <div class="col-period">2週間</div>
+                <div class="col-select">
+                    <input type="checkbox" id="upscale">
+                </div>
+            </div>
+
+            <h2>実行環境の選択</h2>
+            <!-- RunPod環境 -->
+            <div class="table-row">
+                <div class="col-feature">
+                    <i class="fas fa-server"></i>
+                    RunPod環境（低速利用）
+                </div>
+                <div class="col-initial">0円</div>
+                <div class="col-monthly">5万円</div>
+                <div class="col-period">-</div>
+                <div class="col-select">
+                    <input type="radio" name="environment" id="runpod">
+                </div>
+            </div>
+
+            <!-- GoogleColab環境 -->
+            <div class="table-row">
+                <div class="col-feature">
+                    <i class="fas fa-cloud"></i>
+                    GoogleColab環境
+                </div>
+                <div class="col-initial">0円</div>
+                <div class="col-monthly">2,500円</div>
+                <div class="col-period">-</div>
+                <div class="col-select">
+                    <input type="radio" name="environment" id="colab">
+                </div>
+            </div>
+        </div>
+
+        <div class="total-cost">
+            <h2>概算見積もり</h2>
+            <div class="cost-summary" id="costSummary">
+                <div class="cost-item">
+                    <span>初期費用：</span>
+                    <span class="initial-cost">14万円～</span>
+                </div>
+                <div class="cost-item">
+                    <span>月額費用：</span>
+                    <span class="monthly-cost">3,000円～</span>
+                </div>
+                <div class="cost-item">
+                    <span>開発期間：</span>
+                    <span class="development-period">4週間～</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
