@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リアルアバターシステム - 開発と運用の流れ</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1, h2, h3, h4 {
+            color: #2563eb;
+        }
+        
+        .workflow-card {
+            border-left: 4px solid #2563eb;
+            background-color: #f0f7ff;
+        }
+        
+        .development-section {
+            background-color: #f0f7ff;
+        }
+        
+        .operation-section {
+            background-color: #f0fff4;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 12px;
+        }
+        
+        .timeline-item:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #2563eb;
+        }
+        
+        .timeline-item:after {
+            content: "";
+            position: absolute;
+            left: 5px;
+            top: 20px;
+            bottom: -16px;
+            width: 2px;
+            background-color: #e5e7eb;
+        }
+        
+        .timeline-item:last-child:after {
+            display: none;
+        }
+        
+        .api-tag {
+            background-color: #f59e0b;
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .oss-tag {
+            background-color: #10b981;
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .code-block {
+            background-color: #f1f5f9;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #334155;
+            overflow-x: auto;
+        }
+        
+        .note {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 12px;
+            font-size: 0.9rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        table th, table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+        }
+        
+        table th {
+            background-color: #f1f5f9;
+            text-align: left;
+        }
+        
+        .image-container {
+            max-width: 100%;
+            margin: 16px 0;
+            text-align: center;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mb-10">
+        <header class="mb-12 border-b pb-6">
+            <h1 class="text-3xl font-bold mb-4">リアルアバターシステム - 開発フローと運用フロー</h1>
+            <p class="text-gray-600">YouTube動画作成やライブ販売のためのリアルなアバター制作システム</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">システム概要</h2>
+            <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                <p class="mb-4">このシステムは、リアルなアバターを作成し、YouTube動画やライブ販売に活用することを目的としています。台本を音声に起こし、それを元に動画ファイルを作成して、アイテム紹介などのコンテンツを提供します。</p>
+                <p>4つの異なる作業フローを提供し、用途や予算に応じて最適な方法を選択できます。いずれのフローもGoogle Colabで実行する前提で設計されています。</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-blue-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-3">開発側の責任範囲</h3>
+                    <ul class="list-disc ml-6 space-y-2">
+                        <li>各作業フローで使用するツールのセットアップ</li>
+                        <li>Google Colab上での実行環境の構築</li>
+                        <li>必要なAPIキーの取得と設定</li>
+                        <li>各ツール間の連携テスト</li>
+                        <li>動作検証とパフォーマンス最適化</li>
+                    </ul>
+                </div>
+                <div class="bg-green-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-3">お客様側の運用</h3>
+                    <ul class="list-disc ml-6 space-y-2">
+                        <li>Google Colabインターフェースを直接使用</li>
+                        <li>台本の作成と入力</li>
+                        <li>音声ファイルの生成</li>
+                        <li>アバター動画の生成と調整</li>
+                        <li>生成された動画ファイルのダウンロードと活用</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">開発フローと期間</h2>
+            <div class="development-section p-6 rounded-lg">
+                <table class="w-full mb-6">
+                    <thead>
+                        <tr>
+                            <th class="w-1/4">フェーズ</th>
+                            <th class="w-1/2">作業内容</th>
+                            <th class="w-1/4">期間</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>環境構築</td>
+                            <td>使用機能の取捨選択、Google Colab環境の準備</td>
+                            <td>要相談</td>
+                        </tr>
+                        <tr>
+                            <td>コア機能開発</td>
+                            <td>各種OSSツールの統合と連携開発</td>
+                            <td>各システム約1週間</td>
+                        </tr>
+                        <tr>
+                            <td>UI実装</td>
+                            <td>各APIとの連携インターフェース開発</td>
+                            <td>1ヶ月</td>
+                        </tr>
+                        <tr>
+                            <td>テスト・最適化</td>
+                            <td>動作検証、パフォーマンス改善、安定性向上</td>
+                            <td>1〜2ヶ月</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3 class="text-xl font-semibold mb-4">開発における主要なタスク</h3>
+                <div class="space-y-4 mb-6">
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">1. 各ツールのGoogle Colab実行環境の構築</h4>
+                        <p class="text-gray-700">EchoMimicV2、MagicAnimate、Wav2Lip、4k-video-upscaler-colabなどのOSSツールをGoogle Colab上で実行できるように環境を整備します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">2. 各APIとの連携開発</h4>
+                        <p class="text-gray-700">にじボイスAPI、Kling API、HeyGen APIなど、外部サービスとの連携を実装します。認証情報の管理や通信エラー処理も含みます。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">3. 背景透過処理の実装</h4>
+                        <p class="text-gray-700">AdaM / IS-Netを使った背景透過処理の実装と最適化を行います。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">4. Colabノートブックのユーザビリティ向上</h4>
+                        <p class="text-gray-700">お客様が直感的に操作できるよう、Colabノートブックの説明や操作ガイダンスを充実させます。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">5. 最適化とパフォーマンス改善</h4>
+                        <p class="text-gray-700">処理速度の向上、メモリ使用の最適化、エラーハンドリングの強化などを行います。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">作業フロー1: ニュースの読み上げのような少ない動き</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="workflow-card p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-4">使用技術</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <span class="api-tag mr-2">API</span>
+                            <span class="font-medium">にじボイスAPI</span>
+                        </div>
+                        <p class="text-sm text-gray-600">100種類以上の声から選択して、感情豊かな音声ファイルを生成します。</p>
+                        
+                        <div class="flex items-center">
+                            <span class="oss-tag mr-2">OSS</span>
+                            <span class="font-medium">EchoMimicV2</span>
+                        </div>
+                        <p class="text-sm text-gray-600">アバター画像を参考に、音声に合わせてリップシンク（口の動き）を生成します。</p>
+                        
+                        <div class="flex items-center mt-4">
+                            <span class="oss-tag mr-2">OSS</span>
+                            <span class="font-medium">4k-video-upscaler-colab</span>
+                        </div>
+                        <p class="text-sm text-gray-600">必要に応じて動画を高解像度にアップスケールします。</p>
+                        
+                        <div class="flex items-center mt-4">
+                            <span class="oss-tag mr-2">OSS</span>
+                            <span class="font-medium">AdaM / IS-Net</span>
+                        </div>
+                        <p class="text-sm text-gray-600">動画の背景を透過処理して、様々な背景と合成可能にします。</p>
+                    </div>
+                </div>
+                
+                <div class="image-container">
+                    <img src="https://i.ytimg.com/vi/2P49SCJYEbY/maxresdefault.jpg" alt="EchoMimicV2によるリップシンク例" class="rounded-lg shadow-md">
+                    <p class="text-sm text-gray-500 mt-2">EchoMimicV2によるリップシンク例</p>
+                </div>
+            </div>
+            
+            <div class="operation-section p-6 rounded-lg mb-8">
+                <h3 class="text-xl font-semibold mb-4">お客様の運用フロー</h3>
+                <div class="space-y-4">
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">1. 台本作成と音声ファイルの生成</h4>
+                        <p class="text-gray-700">台本テキストを入力し、にじボイスAPIを使って音声ファイルを作成します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">2. アバター画像のアップロード</h4>
+                        <p class="text-gray-700">Google Colabのファイルアップロード機能を使ってアバター画像をアップロードします。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">3. EchoMimicV2でリップシンク動画の生成</h4>
+                        <p class="text-gray-700">アップロードしたアバター画像と音声ファイルを元に、リップシンク動画を生成します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">4. 必要に応じてアップスケール</h4>
+                        <p class="text-gray-700">生成された動画の解像度が低い場合、4k-video-upscaler-colabでアップスケールします。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">5. 背景透過処理</h4>
+                        <p class="text-gray-700">AdaM / IS-Netを使って動画の背景を透過処理します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">6. 完成した動画のダウンロード</h4>
+                        <p class="text-gray-700">生成された最終動画をダウンロードして活用します。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="note">
+                <p class="font-semibold">注意点:</p>
+                <ul class="list-disc ml-6 mt-2">
+                    <li>にじボイスAPIを使用するには、別途APIキーの取得と契約が必要です。</li>
+                    <li>Google Colabの無料版は連続使用時間に制限があります。長時間の処理には有料版の検討をおすすめします。</li>
+                    <li>処理速度はGoogle Colabで割り当てられるリソースに依存します。</li>
+                    <li>高品質な動画生成には、解像度の高いアバター画像の使用を推奨します。</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">作業フロー2: 大きい動き</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="workflow-card p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-4">使用技術</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <span class="api-tag mr-2">API</span>
+                            <span class="font-medium">にじボイスAPI</span>
+                        </div>
+                        <p class="text-sm text-gray-600">100種類以上の声から選択して、感情豊かな音声ファイルを生成します。</p>
+                        
+                        <div class="flex items-center mt-4">
+                            <span class="oss-tag mr-2">OSS</span>
+                            <span class="font-medium">MagicAnimate</span>
+                        </div>
+                        <p class="text-sm text-gray-600">元動画を参考に、アバターの動画を生成します。大きな動きや表情の変化を表現できます。</p>
+                        
+                        <div class="flex items-center mt-4">
+                            <span class="oss-tag mr-2">OSS</span>
+                            <span class="font-medium">Wav2Lip</span>
+                        </div>
+                        <p class="text-sm text-gray-600">生成された動画に音声を合わせて、自然なリップシンクを実現します。</p>
+
+                        <div class="flex items-center mt-4">
+                            <span class="oss-tag mr-2">OSS</span>
+                            <span class="font-medium">4k-video-upscaler-colab</span>
+                        </div>
+                        <p class="text-sm text-gray-600">必要に応じて動画を高解像度にアップスケールします。</p>
+                        
+                        <div class="flex items-center mt-4">
+                            <span class="oss-tag mr-2">OSS</span>
+                            <span class="font-medium">AdaM / IS-Net</span>
+                        </div>
+                        <p class="text-sm text-gray-600">動画の背景を透過処理して、様々な背景と合成可能にします。</p>
+                    </div>
+                </div>
+                
+                <div class="image-container">
+                    <img src="https://www.magicanimate.org/magicanimate-demo-1.gif" alt="MagicAnimateによる動画生成例" class="rounded-lg shadow-md">
+                    <p class="text-sm text-gray-500 mt-2">MagicAnimateによる動画生成例</p>
+                </div>
+            </div>
+            
+            <div class="operation-section p-6 rounded-lg mb-8">
+                <h3 class="text-xl font-semibold mb-4">お客様の運用フロー</h3>
+                <div class="space-y-4">
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">1. 台本作成と音声ファイルの生成</h4>
+                        <p class="text-gray-700">台本テキストを入力し、にじボイスAPIを使って音声ファイルを作成します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">2. 元動画のアップロード</h4>
+                        <p class="text-gray-700">参考にする元動画をGoogle Colabにアップロードします。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">3. アバター画像のアップロード</h4>
+                        <p class="text-gray-700">アバター画像をアップロードします。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">4. MagicAnimateでアバター動画の生成</h4>
+                        <p class="text-gray-700">元動画を参考に、アバター画像から動画を生成します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">5. Wav2Lipでリップシンク処理</h4>
+                        <p class="text-gray-700">生成した動画に音声を合わせて、リップシンク処理を行います。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">6. 必要に応じてアップスケール</h4>
+                        <p class="text-gray-700">動画の解像度を向上させる場合は、アップスケール処理を行います。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">7. 背景透過処理</h4>
+                        <p class="text-gray-700">AdaM / IS-Netを使って動画の背景を透過処理します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">8. 完成した動画のダウンロード</h4>
+                        <p class="text-gray-700">生成された最終動画をダウンロードして活用します。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="note">
+                <p class="font-semibold">注意点:</p>
+                <ul class="list-disc ml-6 mt-2">
+                    <li>Google Colabの無料版では能力的に厳しいです。有料版を推奨します。</li>
+                    <li>MagicAnimateとWav2Lipの連携処理には、高いGPUリソースが必要になります。処理時間が長くなる場合があります。</li>
+                    <li>元動画の品質が最終出力の品質に大きく影響します。高品質な参考動画の使用を推奨します。</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">作業フロー3: プロンプトでの操作を前提としたフロー</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="workflow-card p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-4">使用技術</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <span class="api-tag mr-2">API</span>
+                            <span class="font-medium">Kling API</span>
+                        </div>
+                        <p class="text-sm text-gray-600">テキストプロンプトからアバターの動画を生成します。元動画不要で動きを指定できます。</p>
+                        
+                        <div class="flex items-center mt-4">
+                            <span class="oss-tag mr-2">OSS</span>
+                            <span class="font-medium">AdaM / IS-Net</span>
+                        </div>
+                        <p class="text-sm text-gray-600">動画の背景を透過処理します。</p>
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-yellow-50 rounded-lg">
+                        <h4 class="font-semibold text-yellow-800">Kling API料金プラン</h4>
+                        <table class="w-full mt-2 text-sm">
+                            <thead>
+                                <tr>
+                                    <th>プラン</th>
+                                    <th>価格</th>
+                                    <th>クレジット</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>トライアル</td>
+                                    <td>$8.39</td>
+                                    <td>100クレジット</td>
+                                </tr>
+                                <tr>
+                                    <td>パッケージ1</td>
+                                    <td>$1,400/月</td>
+                                    <td>10,000クレジット/月</td>
+                                </tr>
+                                <tr>
+                                    <td>パッケージ2</td>
+                                    <td>$1,890/月</td>
+                                    <td>15,000クレジット/月</td>
+                                </tr>
+                                <tr>
+                                    <td>パッケージ3</td>
+                                    <td>$2,240/月</td>
+                                    <td>20,000クレジット/月</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-xs text-gray-600 mt-2">※動画5秒で20〜30クレジットを消費</p>
+                    </div>
+                </div>
+                
+                <div class="image-container">
+                    <img src="https://www.vidnoz.com/bimg/kling-ai.webp" alt="Kling APIによる動画生成例" class="rounded-lg shadow-md">
+                    <p class="text-sm text-gray-500 mt-2">Kling APIによる動画生成例</p>
+                </div>
+            </div>
+            
+            <div class="operation-section p-6 rounded-lg mb-8">
+                <h3 class="text-xl font-semibold mb-4">お客様の運用フロー</h3>
+                <div class="space-y-4">
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">1. 台本作成と音声ファイルの生成</h4>
+                        <p class="text-gray-700">台本テキストを入力し、にじボイスAPIを使って音声ファイルを作成します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">2. アバター画像のアップロード</h4>
+                        <p class="text-gray-700">アバター画像をアップロードします。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">3. プロンプトの作成</h4>
+                        <p class="text-gray-700">アバターの動きを指定するテキストプロンプトを作成します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">4. Kling APIでアバター動画の生成</h4>
+                        <p class="text-gray-700">プロンプトとアバター画像からKling APIを使って動画を生成します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">5. 音声との合成</h4>
+                        <p class="text-gray-700">生成した動画と音声ファイルをKling APIを使って合成します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">6. 背景透過処理</h4>
+                        <p class="text-gray-700">AdaM / IS-Netを使って動画の背景を透過処理します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">7. 完成した動画のダウンロード</h4>
+                        <p class="text-gray-700">生成された最終動画をダウンロードして活用します。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="note">
+                <p class="font-semibold">注意点:</p>
+                <ul class="list-disc ml-6 mt-2">
+                    <li>Kling APIは高品質な動画生成が可能ですが、コストが高いため、利用計画を慎重に検討する必要があります。</li>
+                    <li>プロンプトの品質が出力結果に大きく影響します。詳細かつ明確なプロンプトの作成が重要です。</li>
+                    <li>クレジット消費を監視するための機能をGoogle Colabノートブックに実装することをおすすめします。</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">作業フロー4: リアルタイムも可能なフロー</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="workflow-card p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-4">使用技術</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <span class="api-tag mr-2">API</span>
+                            <span class="font-medium">HeyGen API</span>
+                        </div>
+                        <p class="text-sm text-gray-600">175以上の言語に対応し、リアルタイムでのリップシンク生成も可能なAPIです。</p>
+                        
+                        <div class="flex items-center mt-4">
+                            <span class="oss-tag mr-2">OSS</span>
+                            <span class="font-medium">AdaM / IS-Net</span>
+                        </div>
+                        <p class="text-sm text-gray-600">動画の背景を透過処理します。</p>
+                    </div>
+                </div>
+                
+                <div class="image-container">
+                    <img src="https://static.heygencdn.com/heygen/avatar/ia_intro.jpg" alt="HeyGenによるアバター生成例" class="rounded-lg shadow-md">
+                    <p class="text-sm text-gray-500 mt-2">HeyGenによるアバター生成例</p>
+                </div>
+            </div>
+            
+            <div class="operation-section p-6 rounded-lg mb-8">
+                <h3 class="text-xl font-semibold mb-4">お客様の運用フロー</h3>
+                <div class="space-y-4">
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">1. 台本作成と音声ファイルの生成</h4>
+                        <p class="text-gray-700">台本テキストを入力し、にじボイスAPIを使って音声ファイルを作成します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">2. アバター画像のアップロード</h4>
+                        <p class="text-gray-700">アバター画像をHeyGenにアップロードします。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">3. HeyGen APIでアバター動画の生成</h4>
+                        <p class="text-gray-700">アバター画像と音声ファイルからHeyGen APIを使って動画を生成します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">4. 背景透過処理（非リアルタイムモードの場合）</h4>
+                        <p class="text-gray-700">通常モードの場合、AdaM / IS-Netを使って動画の背景を透過処理します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">5A. 通常モード: 完成した動画のダウンロード</h4>
+                        <p class="text-gray-700">生成された最終動画をダウンロードして活用します。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="font-semibold">5B. リアルタイムモード: ライブ配信の設定</h4>
+                        <p class="text-gray-700">リアルタイムモードの場合、生成されたストリームをYouTubeライブなどに接続します。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="note">
+                <p class="font-semibold">注意点:</p>
+                <ul class="list-disc ml-6 mt-2">
+                    <li>HeyGen APIの使用には、別途契約と費用が発生します。</li>
+                    <li>リアルタイムモードでは、安定したインターネット接続が必要です。</li>
+                    <li class="text-red-600">APIの仕様も不明なため、どこまでできるかは全く見えません。</li>
+                    <li>多言語対応が必要な場合は、HeyGen APIの言語設定を適切に構成してください。</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="mb-12">
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-6">各種機能の選択</h2>
+    
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2">共通コアシステム</h3>
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <ul class="list-disc ml-6 space-y-2">
+                            <li><strong>Google Colab実行環境:</strong> 全てのフローはこの環境上で動作します。無料版には利用制限があるため、長時間の処理や高負荷な作業には有料版の検討が必要です。セッション切断のリスクがあるため、定期的なデータ保存が推奨されます。</li>
+                            <li><strong>背景透過処理 (AdaM / IS-Net):</strong> ほぼ全てのフローで最終的な動画の背景を透過させるために使用します。</li>
+                            <li><strong>動画アップスケーラー (4k-video-upscaler-colab):</strong> フロー1およびフロー2で、生成された動画の解像度を向上させる場合に利用します。</li>
+                             <li><strong>にじボイスAPI:</strong> フロー1、2、3、4で共通して使用する音声合成APIです。（ただし、フロー3,4は他の音声合成APIも選択肢として考えられます）。利用には別途契約とAPIキーが必要です。</li>
+                        </ul>
+                    </div>
+                </div>
+    
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 text-green-700 border-b pb-2">取捨選択可能な機能</h3>
+                    <div class="space-y-6">
+                        <div class="bg-green-50 p-6 rounded-lg">
+                             <h4 class="font-semibold mb-2">フロー1: 少ない動き (ニュース読み上げなど)</h4>
+                            <ul class="list-disc ml-6 space-y-1 text-sm">
+                                <li><strong>EchoMimicV2 (OSS):</strong> アバター画像と音声からリップシンク動画を生成します。動きは少ないですが、比較的低コストで実現可能です。</li>
+                            </ul>
+                        </div>
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h4 class="font-semibold mb-2">フロー2: 大きい動き</h4>
+                             <ul class="list-disc ml-6 space-y-1 text-sm">
+                                <li><strong>MagicAnimate (OSS):</strong> 元動画の動きをアバターに反映させます。</li>
+                                <li><strong>Wav2Lip (OSS):</strong> MagicAnimateで生成した動画にリップシンクを付与します。高いGPUリソースが必要となり、処理時間が長くなる可能性があります。元動画の品質が重要です。</li>
+                             </ul>
+                            <p class="text-xs text-gray-600 mt-2">※ フロー2は高いGPU性能が求められるため、Colab有料版が推奨されます。</p>
+                        </div>
+                         <div class="bg-green-50 p-6 rounded-lg">
+                            <h4 class="font-semibold mb-2">フロー3: プロンプトによる操作</h4>
+                             <ul class="list-disc ml-6 space-y-1 text-sm">
+                                <li><strong>Kling API:</strong> テキストプロンプトから動画を生成します。元動画が不要な点がメリットですが、従量課金制でありコストが高くなる可能性があります。プロンプトの質が出力に大きく影響します。</li>
+                             </ul>
+                             <p class="text-xs text-gray-600 mt-2">※ コスト管理が重要です。クレジット消費を監視する仕組みの導入を推奨します。</p>
+                         </div>
+                         <div class="bg-green-50 p-6 rounded-lg">
+                            <h4 class="font-semibold mb-2">フロー4: リアルタイム処理</h4>
+                            <ul class="list-disc ml-6 space-y-1 text-sm">
+                                 <li><strong>HeyGen API:</strong> リアルタイムでのリップシンク生成が可能です。多言語対応も特徴ですが、こちらも従量課金制です。リアルタイム処理には安定したネットワーク環境が必須です。</li>
+                            </ul>
+                             <p class="text-xs text-red-600 mt-2">※ API仕様が不明瞭な部分があり、現時点では実現可能性は未知数です。</p>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="mt-8 bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-400">
+                     <h3 class="text-xl font-semibold mb-4 text-yellow-800">開発・運用上の全般的な留意点</h3>
+                     <ul class="list-disc ml-6 space-y-2">
+                         <li><strong>リアルタイム性について:</strong> キャラクターアバターと違い、基本的に実写のリアルアバターではリアルタイム処理はできません。あくまでも可能なのは"動画ファイルの作成"です。</li>
+                         <li><strong>作業フローについて</strong> リアルタイム処理のできるキャラクターアバターは文字での操作が可能ですが、リアルアバターでは動画ファイルの編集作業が必要です。長時間の動画生成もマシーンスペック的に困難なので数分の動画を切り貼りして1本の動画を作る必要があります。</li>
+                         <li><strong>ドキュメントとサポート:</strong> お客様がスムーズに運用できるよう、分かりやすいドキュメントやチュートリアルの提供、およびサポート体制の構築が重要です。</li>
+                     </ul>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
